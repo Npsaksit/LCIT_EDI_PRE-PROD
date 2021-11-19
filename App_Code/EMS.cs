@@ -52,11 +52,11 @@ public class EMS
 
                 //-----------------------------------CREATE HEADER EDI FILE -----------------------------------------------
                 //-------------- For Header Table Query data from : EdiTB.Rows[0]["COLUMNS_NAME"].ToString()-------------
-                EDIHeader = "UNB+UNOA:1+" + SenderID + "+" + ReceiveID + "+" + dt.ToString("yyMMdd") + ":" + dt.ToString("HHmm") + "+" + "CODEMSI" + TerArea.Substring(1, 1) + "++CODECO'\r\n" +
-                            "UNH+1+CODECO:D:95B:UN'\r\n";
+                EDIHeader = "UNB+UNOA:1+" + SenderID + "+" + ReceiveID + "+" + dt.ToString("yyMMdd") + ":" + dt.ToString("HHmm") + "+" + "CODEMSI" + TerArea.Substring(1, 1) + "++CODECO'\r\n";
 
 
-                countSegment = countSegment + 2;
+
+                countSegment = countSegment + 1;
 
 
                 // ----------------------------------- CREATE BODY EDI CODECO BY CUSTOMER FORMAT -----------------------------
@@ -68,10 +68,15 @@ public class EMS
                 Console.Write(EDIHeader);
                 for (int checkdtb = 0; checkdtb < EdiTB.Rows.Count; checkdtb++)
                 {
+                    countSegment = 1;
+
+                    Console.WriteLine("UNH+"+(Int64.Parse(checkdtb.ToString())+1)+"+CODECO:D:95B:UN'");
+                    countSegment++;
+
                     Console.WriteLine("BGM+34+" + dt.ToString("yyyyMMddHH") + "+9'");
                     countSegment++;
 
-                    Console.WriteLine("NAD+MS+THLCHTLCIT'");
+                    Console.WriteLine("NAD+MS+THLCHTLCIT:160:184'");
                     countSegment++;
 
                     Console.WriteLine("GID+1'");
@@ -95,7 +100,7 @@ public class EMS
                     Console.WriteLine("DTM+7:" + EdiTB.Rows[checkdtb]["ACTIVITY_TM"].ToString() + ":203'");
                     countSegment++;
 
-                    Console.WriteLine("LOC+165+THLCH:139:6+THLCHDL" + EdiTB.Rows[checkdtb]["AREA_C"].ToString() + ":TER:ZZZ'");
+                    Console.WriteLine("LOC+165+THLCH:139:6+THLCHTLCIT:TER:ZZZ'");
                     countSegment++;
 
                     Console.WriteLine("MEA+AAE+G+KGM:" + EdiTB.Rows[checkdtb]["GWEIGHT"].ToString() + "'");
@@ -113,16 +118,16 @@ public class EMS
                         countSegment++;
                     }
 
-                    Console.WriteLine("TDT+1++" + EdiTB.Rows[checkdtb]["IN_TRANSPORT_MODE_CODE"].ToString() + "+++++:::" + EdiTB.Rows[checkdtb]["INLAND_CARR_TP_MEAN_CODE"] + "'");
+                    Console.WriteLine("TDT+1++" + EdiTB.Rows[checkdtb]["IN_TRANSPORT_MODE_CODE"].ToString() + "++"+EdiTB.Rows[checkdtb]["CNTR_OPERATOR_CODE"].ToString()+":172:87+++" + EdiTB.Rows[checkdtb]["INLAND_CARR_TP_MEAN_CODE"] + "'");
                     countSegment++;
 
                     Console.WriteLine("CNT+1:1'");
                     countSegment++;
 
-                    Console.WriteLine("UNT+" + countSegment.ToString() + "+" + EdiTB.Rows.Count + "'");
+                    Console.WriteLine("UNT+" + countSegment.ToString() + "+" + (Int64.Parse(checkdtb.ToString())+1) + "'");
                 }
                 // ------------------------------------ CREATE FOOTER IN EDI FILE ----------------------------------------------------
-                Console.WriteLine("UNZ+1+CODECO'");
+                Console.WriteLine("UNZ+"+EdiTB.Rows.Count+"+CODEMSI"+TerArea.Substring(1, 1)+"'");
                 Console.SetOut(oldOut);
                 writer.Close();
                 ostrm.Close();
@@ -142,15 +147,10 @@ public class EMS
 
             case "OT":
 
-                EDIHeader = "UNB+UNOA:1+" + SenderID + "+" + ReceiveID + "+" + dt.ToString("yyMMdd") + ":" + dt.ToString("HHmm") + "+" + "DI++CODECO'\r\n" +
-                            "UNH+" + dt.ToString("yyyyMMddHH") + "+CODECO:D:95B:UN'\r\n" +
-                            "BGM+36+CONTAINER GATE IN/OUT+9'\r\n" +
-                            "TDT+20+" + EdiTB.Rows[0]["VOYAGE_AN"].ToString() + "+1+++++" + EdiTB.Rows[0]["VISIT_VSL_CALL_SIGN_C"].ToString() + ":103'\r\n" +
-                            "LOC+15+LCB05'\r\n" +
-                            "LOC+11+THLCH:139:6'\r\n" +
-                            "NAD+MS+LCIT'\r\n";
+                EDIHeader = "UNB+UNOA:1+" + SenderID + "+" + ReceiveID + "+" + dt.ToString("yyMMdd") + ":" + dt.ToString("HHmm") + "+" +"CODEMSO" + TerArea.Substring(1, 1)+"++CODECO'\r\n";
 
-                countSegment = countSegment + 7;
+
+                countSegment = countSegment + 1;
 
                 ostrm = new FileStream(SaveEDIfile.ToString() + "COD" + Line + "OT" + TerArea + FileName.ToString() + ".EDI", FileMode.Create, FileAccess.Write);
                 writer = new StreamWriter(ostrm);
@@ -160,27 +160,63 @@ public class EMS
 
                 for (int checkdtb = 0; checkdtb < EdiTB.Rows.Count; checkdtb++)
                 {
-                    Console.WriteLine("EQD+CN+" + EdiTB.Rows[checkdtb]["CNTR_AN"].ToString() + "+++" + EdiTB.Rows[checkdtb]["EQP_STATUS_CODE"].ToString() + "+" + EdiTB.Rows[checkdtb]["LADEN_INDICATOR_AN"].ToString() + "'");
+                    countSegment = 1;
+
+                    Console.WriteLine("UNH+"+(Int64.Parse(checkdtb.ToString())+1)+"+CODECO:D:95B:UN'");
+                    countSegment++;
+
+                    Console.WriteLine("BGM+36+"+dt.ToString("yyyyMMddHH") +"+9'");
+                    countSegment++;
+
+                    Console.WriteLine("NAD+MS+THLCHTLCIT:160:184'");
+                    countSegment++;
+
+                    Console.WriteLine("GID+1'");
+                    countSegment++;
+
+                    if (EdiTB.Rows[checkdtb]["TEMPERATURE"].ToString() != "NOTEMP")
+                    {
+                        Console.WriteLine("TMP+2+" + EdiTB.Rows[checkdtb]["TEMPERATURE"].ToString() + ":CEL'");
+                        countSegment++;
+                    }
+
+                    Console.WriteLine("EQD+CN+" + EdiTB.Rows[checkdtb]["CNTR_AN"].ToString() + "+" + EdiTB.Rows[checkdtb]["CONTAINER_TYPE_CODE"].ToString() + ":102:5++" + EdiTB.Rows[checkdtb]["EQP_STATUS_CODE"].ToString() + "+" + EdiTB.Rows[checkdtb]["LADEN_INDICATOR_AN"].ToString() + "'");
                     countSegment++;
 
                     if (EdiTB.Rows[checkdtb]["BOOKING_NO_AN"].ToString() != "NOBOOKING")
                     {
+                    
+
                         Console.WriteLine("RFF+BN:" + EdiTB.Rows[checkdtb]["BOOKING_NO_AN"].ToString() + "'");
                         countSegment++;
+
+                        Console.WriteLine("RFF+RE:" + EdiTB.Rows[checkdtb]["BOOKING_NO_AN"].ToString() + "'");
+                        countSegment++;
+                        
+                            
+                        
+                        
                     }
                     if (EdiTB.Rows[checkdtb]["MASTER_BOL_AN"].ToString() != "NOBL")
                     {
-                        Console.WriteLine("RFF+BM:" + EdiTB.Rows[checkdtb]["MASTER_BOL_AN"].ToString() + "'");
+                        Console.WriteLine("RFF+CN:" + EdiTB.Rows[checkdtb]["MASTER_BOL_AN"].ToString() + "'");
                         countSegment++;
                     }
                     Console.WriteLine("DTM+7:" + EdiTB.Rows[checkdtb]["ACTIVITY_TM"].ToString() + ":203'");
                     countSegment++;
-                    Console.WriteLine("LOC+9+" + EdiTB.Rows[checkdtb]["POL"].ToString() + "'");
+
+                    Console.WriteLine("LOC+165+THLCH:139:6+THLCHTLCIT:TER:ZZZ'");
                     countSegment++;
-                    Console.WriteLine("LOC+99+" + EdiTB.Rows[checkdtb]["DST_CODE"].ToString() + "'");
+
+
+                     Console.WriteLine("MEA+AAE+G+KGM:" + EdiTB.Rows[checkdtb]["GWEIGHT"].ToString() + "'");
                     countSegment++;
-                    Console.WriteLine("MEA+AAE+VGM+KGM:" + EdiTB.Rows[checkdtb]["GWEIGHT"].ToString() + "'");
-                    countSegment++;
+
+                    if (EdiTB.Rows[checkdtb]["VGM"].ToString() != "NOVGM")
+                    {
+                        Console.WriteLine("MEA+AAE+VGM+KGM:" + EdiTB.Rows[checkdtb]["VGM"].ToString() + "'");
+                        countSegment++;
+                    }
 
                     if (EdiTB.Rows[checkdtb]["SEAL"].ToString() != "NOSEAL")
                     {
@@ -188,27 +224,18 @@ public class EMS
                         countSegment++;
                     }
 
-                    if (EdiTB.Rows[checkdtb]["DAMAGE_SEGMENT_AN"].ToString() != " ")
-                    {
-                        Console.WriteLine("DAM+" + EdiTB.Rows[checkdtb]["DAMAGE_SEGMENT_AN"].ToString() + "'");
-                        countSegment++;
-                    }
 
-                    Console.WriteLine("TDT+1++" + EdiTB.Rows[checkdtb]["OUT_TRANSPORT_MODE_CODE"].ToString() + "+++++:::" + EdiTB.Rows[checkdtb]["INLAND_CARR_TP_MEAN_CODE"] + "'");
-                    countSegment++;
-                    Console.WriteLine("LOC+165+THLCH:139:6+THLCHDL" + EdiTB.Rows[checkdtb]["AREA_C"].ToString() + ":TER:ZZZ'");
+                    Console.WriteLine("TDT+1++" + EdiTB.Rows[checkdtb]["OUT_TRANSPORT_MODE_CODE"].ToString() + "++"+EdiTB.Rows[checkdtb]["CNTR_OPERATOR_CODE"].ToString()+":172:87+++" + EdiTB.Rows[checkdtb]["INLAND_CARR_TP_MEAN_CODE"] + "'");
                     countSegment++;
 
-                    if (EdiTB.Rows[checkdtb]["SHIPPER"].ToString() != "NO")
-                    {
-                        Console.WriteLine("NAD+CN+" + EdiTB.Rows[checkdtb]["SHIPPER"].ToString().Replace("'", "") + "'");
-                        countSegment++;
-                    }
+                    Console.WriteLine("CNT+1:1'");
+                    countSegment++;
+
+                    Console.WriteLine("UNT+" + countSegment.ToString() + "+" + (Int64.Parse(checkdtb.ToString())+1) + "'");
                 }
-                Console.WriteLine("CNT+16:" + EdiTB.Rows.Count + "'");
-                countSegment++;
-                Console.WriteLine("UNT+" + countSegment.ToString() + "+" + dt.ToString("yyyyMMddHH") + "'");
-                Console.WriteLine("UNZ+1+CODECO'");
+
+                Console.WriteLine("UNZ+"+EdiTB.Rows.Count+"+CODEMSO"+TerArea.Substring(1, 1)+"'");
+
                 //------------------------------------------ END OF CREATE EDI FILE PROCESS ---------------------------------------------------------
                 Console.SetOut(oldOut);
                 writer.Close();
@@ -228,12 +255,13 @@ public class EMS
                 break;
 
             case "LD":
-                EDIHeader = "UNB+UNOA:1+" + SenderID + "+" + ReceiveID + "+" + dt.ToString("yyMMdd") + ":" + dt.ToString("HHmm") + "+" + "LO++COARRI'\r\n" +
+                EDIHeader = "UNB+UNOA:1+" + SenderID + "+" + ReceiveID + "+" + dt.ToString("yyMMdd") + ":" + dt.ToString("HHmm") + "+" +"COREMSL" + TerArea.Substring(1, 1)+"++COARRI'\r\n" +
                               "UNH+" + dt.ToString("yyyyMMddHH") + "+COARRI:D:95B:UN'\r\n" +
-                              "BGM+270+Discharge/Loading report+9'\r\n" +
-                              "TDT+20++1+++++" + EdiTB.Rows[0]["VISIT_VSL_CALL_SIGN_C"].ToString() + ":103::" + EdiTB.Rows[0]["VESSEL_NM_AN"].ToString() + "'\r\n" +
-                              "LOC+9+THLCH:139:6+THLCHDL" + EdiTB.Rows[0]["AREA_C"].ToString() + ":TER:ZZZ'\r\n" +
-                              "NAD+MS+LCIT'\r\n";
+                              "BGM+270+"+dt.ToString("yyyyMMddHHmmss") +"+9'\r\n" +
+                              "TDT+20+"+EdiTB.Rows[0]["VOYAGE_AN"].ToString()+"+1++EMS:172:ZZZ+++" + EdiTB.Rows[0]["VISIT_VSL_CALL_SIGN_C"].ToString() + ":103::" + EdiTB.Rows[0]["VESSEL_NM_AN"].ToString() + "'\r\n" +
+                              "LOC+9+THLCH:139:6+THLCH:TER:ZZZ'\r\n" +
+                              "NAD+CA+"+EdiTB.Rows[checkdtb]["CNTR_OPERATOR_CODE"].ToString()+":160:ZZZ'\r\n";
+                             
 
                 countSegment = countSegment + 6;
 
@@ -245,7 +273,9 @@ public class EMS
 
                 for (int checkdtb = 0; checkdtb < EdiTB.Rows.Count; checkdtb++)
                 {
-                    Console.WriteLine("EQD+CN+" + EdiTB.Rows[checkdtb]["CNTR_AN"].ToString() + "+" + EdiTB.Rows[checkdtb]["CONTAINER_TYPE_CODE"].ToString() + "++" + EdiTB.Rows[checkdtb]["EQP_STATUS_CODE"].ToString() + "+" + EdiTB.Rows[checkdtb]["LADEN_INDICATOR_AN"].ToString() + "'");
+
+                    
+                    Console.WriteLine("EQD+CN+" + EdiTB.Rows[checkdtb]["CNTR_AN"].ToString() + "+" + EdiTB.Rows[checkdtb]["CONTAINER_TYPE_CODE"].ToString() + ":102:5++" + EdiTB.Rows[checkdtb]["EQP_STATUS_CODE"].ToString() + "+" + EdiTB.Rows[checkdtb]["LADEN_INDICATOR_AN"].ToString() + "'");
                     countSegment++;
                     if (EdiTB.Rows[checkdtb]["BOOKING_NO_AN"].ToString() != "NOBOOKING")
                     {
@@ -254,32 +284,53 @@ public class EMS
                     }
                     Console.WriteLine("DTM+203:" + EdiTB.Rows[checkdtb]["ACTIVITY_TM"].ToString() + ":203'");
                     countSegment++;
-                    Console.WriteLine("LOC+147+::5'");
+
+                    Console.WriteLine("LOC+9+THLCH:139:6'");
                     countSegment++;
-                    Console.WriteLine("LOC+5+THLCH::6'");
+
+                    Console.WriteLine("LOC+11+"+EdiTB.Rows[checkdtb]["POD"].ToString()+":139:6'");
                     countSegment++;
-                    Console.WriteLine("MEA+WT++KGM:" + EdiTB.Rows[checkdtb]["GWEIGHT"].ToString() + "'");
+
+                    Console.WriteLine("LOC+147+"+EdiTB.Rows[checkdtb]["BAY_POSN_AN"].ToString()+"'");
                     countSegment++;
-                    if (EdiTB.Rows[checkdtb]["SEAL"].ToString() != "NOSEAL")
+
+
+                    Console.WriteLine("MEA+AAE+G+KGM:" + EdiTB.Rows[checkdtb]["GWEIGHT"].ToString() + "'");
+                    countSegment++;
+
+                    if (EdiTB.Rows[checkdtb]["VGM"].ToString() != "NOVGM")
                     {
-                        Console.WriteLine("SEL+" + EdiTB.Rows[checkdtb]["SEAL"].ToString() + "'");
+                        Console.WriteLine("MEA+AAE+VGM+KGM:" + EdiTB.Rows[checkdtb]["VGM"].ToString() + "'");
                         countSegment++;
                     }
-                    if (EdiTB.Rows[checkdtb]["IMCO"].ToString() != "NODG")
-                    {
-                        Console.WriteLine("DGS+IMD+" + EdiTB.Rows[checkdtb]["IMCO"].ToString() + "'");
-                        countSegment++;
-                    }
+                   
+
                     if (EdiTB.Rows[checkdtb]["TEMPERATURE"].ToString() != "NOTEMP")
                     {
-                        Console.WriteLine("EQA+RG+" + EdiTB.Rows[checkdtb]["TEMPERATURE"].ToString() + "'");
+                        Console.WriteLine("TMP+2+" + EdiTB.Rows[checkdtb]["TEMPERATURE"].ToString() + ":CEL'");
                         countSegment++;
                     }
+
+                    if (EdiTB.Rows[checkdtb]["SEAL"].ToString() != "NOSEAL")
+                    {
+                        Console.WriteLine("SEL+" + EdiTB.Rows[checkdtb]["SEAL"].ToString() + "+CA'");
+                        countSegment++;
+                    }
+
+                    // if (EdiTB.Rows[checkdtb]["IMCO"].ToString() != "NODG")
+                    // {
+                    //     Console.WriteLine("DGS+IMD+" + EdiTB.Rows[checkdtb]["IMCO"].ToString() + "'");
+                    //     countSegment++;
+                    // }
+                    
+                    Console.WriteLine("NAD+CF+"+EdiTB.Rows[checkdtb]["CNTR_OPERATOR_CODE"].ToString()+":160:ZZZ'");
+                    countSegment++;
+                    
                 }
                 Console.WriteLine("CNT+16:" + EdiTB.Rows.Count + "'");
                 countSegment++;
                 Console.WriteLine("UNT+" + countSegment.ToString() + "+" + dt.ToString("yyyyMMddHH") + "'");
-                Console.WriteLine("UNZ+1+COARRI'");
+                Console.WriteLine("UNZ+1+COREMSL"+TerArea.Substring(1, 1)+"'");
                 //------------------------------------------ END OF CREATE EDI FILE PROCESS ---------------------------------------------------------
                 Console.SetOut(oldOut);
                 writer.Close();
@@ -297,12 +348,12 @@ public class EMS
                 }
                 break;
             case "DG":
-                EDIHeader = "UNB+UNOA:1+" + SenderID + "+" + ReceiveID + "+" + dt.ToString("yyMMdd") + ":" + dt.ToString("HHmm") + "+" + "DI++COARRI'\r\n" +
-                            "UNH+" + dt.ToString("yyyyMMddHH") + "+COARRI:D:95B:UN'\r\n" +
-                            "BGM+98+Discharge/Loading report+9'\r\n" +
-                            "TDT+20+" + EdiTB.Rows[0]["VOYAGE_AN"].ToString() + "+1+++++" + EdiTB.Rows[0]["VISIT_VSL_CALL_SIGN_C"].ToString() + ":103::" + EdiTB.Rows[0]["VESSEL_NM_AN"].ToString() + "'\r\n" +
-                            "LOC+11+THLCH:139:6+THLCHDL" + EdiTB.Rows[0]["AREA_C"].ToString() + ":TER:ZZZ'\r\n" +
-                            "NAD+MS+LCIT'\r\n";
+                EDIHeader = "UNB+UNOA:1+" + SenderID + "+" + ReceiveID + "+" + dt.ToString("yyMMdd") + ":" + dt.ToString("HHmm") + "+" +"COREMSL" + TerArea.Substring(1, 1)+"++COARRI'\r\n" +
+                              "UNH+" + dt.ToString("yyyyMMddHH") + "+COARRI:D:95B:UN'\r\n" +
+                              "BGM+98+"+dt.ToString("yyyyMMddHHmmss") +"+9'\r\n" +
+                              "TDT+20+"+EdiTB.Rows[0]["VOYAGE_AN"].ToString()+"+1++EMS:172:ZZZ+++" + EdiTB.Rows[0]["VISIT_VSL_CALL_SIGN_C"].ToString() + ":103::" + EdiTB.Rows[0]["VESSEL_NM_AN"].ToString() + "'\r\n" +
+                              "LOC+11+THLCH:139:6+THLCHC:TER:ZZZ'\r\n" +
+                              "NAD+CA+"+EdiTB.Rows[checkdtb]["CNTR_OPERATOR_CODE"].ToString()+":160:ZZZ'\r\n";
 
                 countSegment = countSegment + 6;
                 ostrm = new FileStream(SaveEDIfile.ToString() + "COR" + Line + "DG" + TerArea + FileName.ToString() + ".EDI", FileMode.Create, FileAccess.Write);
@@ -312,48 +363,68 @@ public class EMS
 
                 for (int checkdtb = 0; checkdtb < EdiTB.Rows.Count; checkdtb++)
                 {
-                    Console.WriteLine("EQD+CN+" + EdiTB.Rows[checkdtb]["CNTR_AN"].ToString() + "+" + EdiTB.Rows[checkdtb]["CONTAINER_TYPE_CODE"].ToString() + "++" + EdiTB.Rows[checkdtb]["EQP_STATUS_CODE"].ToString() + "+" + EdiTB.Rows[checkdtb]["LADEN_INDICATOR_AN"].ToString() + "'");
+                   Console.WriteLine("EQD+CN+" + EdiTB.Rows[checkdtb]["CNTR_AN"].ToString() + "+" + EdiTB.Rows[checkdtb]["CONTAINER_TYPE_CODE"].ToString() + ":102:5++" + EdiTB.Rows[checkdtb]["EQP_STATUS_CODE"].ToString() + "+" + EdiTB.Rows[checkdtb]["LADEN_INDICATOR_AN"].ToString() + "'");
                     countSegment++;
                     if (EdiTB.Rows[checkdtb]["BOOKING_NO_AN"].ToString() != "NOBOOKING")
                     {
                         Console.WriteLine("RFF+BN:" + EdiTB.Rows[checkdtb]["BOOKING_NO_AN"].ToString() + "'");
                         countSegment++;
                     }
-                    if (EdiTB.Rows[checkdtb]["MASTER_BOL_AN"].ToString() != "NOBL")
-                    {
-                        Console.WriteLine("RFF+BM:" + EdiTB.Rows[checkdtb]["MASTER_BOL_AN"].ToString() + "'");
-                        countSegment++;
-                    }
                     Console.WriteLine("DTM+203:" + EdiTB.Rows[checkdtb]["ACTIVITY_TM"].ToString() + ":203'");
                     countSegment++;
-                    Console.WriteLine("LOC+9+" + EdiTB.Rows[checkdtb]["POL"].ToString() + ":139:6'");
-                    countSegment++;
-                    Console.WriteLine("LOC+147+::5'");
-                    countSegment++;
-                    Console.WriteLine("LOC+60+THLCH::6'");
-                    countSegment++;
-                    Console.WriteLine("MEA+WT++KGM:" + EdiTB.Rows[checkdtb]["GWEIGHT"].ToString() + "'");
-                    countSegment++;
-                    if (EdiTB.Rows[checkdtb]["SEAL"].ToString() != "NOSEAL")
+
+                    if(EdiTB.Rows[checkdtb]["DST_CODE"].ToString() != "")
                     {
-                        Console.WriteLine("SEL+" + EdiTB.Rows[checkdtb]["SEAL"].ToString() + "'");
+                        Console.WriteLine("LOC+8+"+EdiTB.Rows[checkdtb]["DST_CODE"].ToString().Replace(" ","")+":139:6'");
                         countSegment++;
                     }
-                    if (EdiTB.Rows[checkdtb]["IMCO"].ToString() != "NODG")
+
+                    Console.WriteLine("LOC+9+"+EdiTB.Rows[checkdtb]["POL"].ToString()+":139:6'");
+                    countSegment++;
+
+                    Console.WriteLine("LOC+11+"+EdiTB.Rows[checkdtb]["POD"].ToString()+":139:6'");
+                    countSegment++;
+
+                    Console.WriteLine("LOC+147+"+EdiTB.Rows[checkdtb]["BAY_POSN_AN"].ToString()+"'");
+                    countSegment++;
+
+
+                    Console.WriteLine("MEA+AAE+G+KGM:" + EdiTB.Rows[checkdtb]["GWEIGHT"].ToString() + "'");
+                    countSegment++;
+
+                    if (EdiTB.Rows[checkdtb]["VGM"].ToString() != "NOVGM")
                     {
-                        Console.WriteLine("DGS+IMD+" + EdiTB.Rows[checkdtb]["IMCO"].ToString() + "'");
+                        Console.WriteLine("MEA+AAE+VGM+KGM:" + EdiTB.Rows[checkdtb]["VGM"].ToString() + "'");
                         countSegment++;
                     }
+                   
+
                     if (EdiTB.Rows[checkdtb]["TEMPERATURE"].ToString() != "NOTEMP")
                     {
-                        Console.WriteLine("EQA+RG+" + EdiTB.Rows[checkdtb]["TEMPERATURE"].ToString() + "'");
+                        Console.WriteLine("TMP+2+" + EdiTB.Rows[checkdtb]["TEMPERATURE"].ToString() + ":CEL'");
                         countSegment++;
                     }
+
+                    if (EdiTB.Rows[checkdtb]["SEAL"].ToString() != "NOSEAL")
+                    {
+                        Console.WriteLine("SEL+" + EdiTB.Rows[checkdtb]["SEAL"].ToString() + "+CA'");
+                        countSegment++;
+                    }
+
+                    // if (EdiTB.Rows[checkdtb]["IMCO"].ToString() != "NODG")
+                    // {
+                    //     Console.WriteLine("DGS+IMD+" + EdiTB.Rows[checkdtb]["IMCO"].ToString() + "'");
+                    //     countSegment++;
+                    // }
+                    
+                    Console.WriteLine("NAD+CF+"+EdiTB.Rows[checkdtb]["CNTR_OPERATOR_CODE"].ToString()+":160:ZZZ'");
+                    countSegment++;
+                    
                 }
                 Console.WriteLine("CNT+16:" + EdiTB.Rows.Count + "'");
                 countSegment++;
                 Console.WriteLine("UNT+" + countSegment.ToString() + "+" + dt.ToString("yyyyMMddHH") + "'");
-                Console.WriteLine("UNZ+1+COARRI'");
+                Console.WriteLine("UNZ+1+COREMSD"+TerArea.Substring(1, 1)+"'");
                 Console.SetOut(oldOut);
                 writer.Close();
                 ostrm.Close();
