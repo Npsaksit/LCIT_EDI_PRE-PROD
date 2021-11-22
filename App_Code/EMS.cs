@@ -260,7 +260,7 @@ public class EMS
                               "BGM+270+"+dt.ToString("yyyyMMddHHmmss") +"+9'\r\n" +
                               "TDT+20+"+EdiTB.Rows[0]["VOYAGE_AN"].ToString()+"+1++EMS:172:ZZZ+++" + EdiTB.Rows[0]["VISIT_VSL_CALL_SIGN_C"].ToString() + ":103::" + EdiTB.Rows[0]["VESSEL_NM_AN"].ToString() + "'\r\n" +
                               "LOC+9+THLCH:139:6+THLCH:TER:ZZZ'\r\n" +
-                              "NAD+CA+"+EdiTB.Rows[checkdtb]["CNTR_OPERATOR_CODE"].ToString()+":160:ZZZ'\r\n";
+                              "NAD+CA+"+Line+":160:ZZZ'\r\n";
                              
 
                 countSegment = countSegment + 6;
@@ -353,7 +353,7 @@ public class EMS
                               "BGM+98+"+dt.ToString("yyyyMMddHHmmss") +"+9'\r\n" +
                               "TDT+20+"+EdiTB.Rows[0]["VOYAGE_AN"].ToString()+"+1++EMS:172:ZZZ+++" + EdiTB.Rows[0]["VISIT_VSL_CALL_SIGN_C"].ToString() + ":103::" + EdiTB.Rows[0]["VESSEL_NM_AN"].ToString() + "'\r\n" +
                               "LOC+11+THLCH:139:6+THLCHC:TER:ZZZ'\r\n" +
-                              "NAD+CA+"+EdiTB.Rows[checkdtb]["CNTR_OPERATOR_CODE"].ToString()+":160:ZZZ'\r\n";
+                              "NAD+CA+"+LinerPF+":160:ZZZ'\r\n";
 
                 countSegment = countSegment + 6;
                 ostrm = new FileStream(SaveEDIfile.ToString() + "COR" + Line + "DG" + TerArea + FileName.ToString() + ".EDI", FileMode.Create, FileAccess.Write);
