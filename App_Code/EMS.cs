@@ -134,15 +134,15 @@ public class EMS
 
                 countSegment = 0;
                 // ---------------------------------------------- END OF CREATE EDI FILE PROCESS --------------------------------------------
-                if (SenderType.ToString() == "EMAIL")
-                {
-                    send_mail.send_mail_control(Line.ToString(), Move.ToString(), TerArea.ToString());
-                    MoveFile(SaveEDIfile, SenderType.ToString());
-                }
-                else if (SenderType.ToString() == "FTP")
-                {
-                    MoveFile(SaveEDIfile, SenderType.ToString());
-                }
+                // if (SenderType.ToString() == "EMAIL")
+                // {
+                //     send_mail.send_mail_control(Line.ToString(), Move.ToString(), TerArea.ToString());
+                //     MoveFile(SaveEDIfile, SenderType.ToString());
+                // }
+                // else if (SenderType.ToString() == "FTP")
+                // {
+                //     MoveFile(SaveEDIfile, SenderType.ToString());
+                // }
                 break;
 
             case "OT":
@@ -348,12 +348,12 @@ public class EMS
                 }
                 break;
             case "DG":
-                EDIHeader = "UNB+UNOA:1+" + SenderID + "+" + ReceiveID + "+" + dt.ToString("yyMMdd") + ":" + dt.ToString("HHmm") + "+" +"COREMSL" + TerArea.Substring(1, 1)+"++COARRI'\r\n" +
+                EDIHeader = "UNB+UNOA:1+" + SenderID + "+" + ReceiveID + "+" + dt.ToString("yyMMdd") + ":" + dt.ToString("HHmm") + "+" +"COREMSD" + TerArea.Substring(1, 1)+"++COARRI'\r\n" +
                               "UNH+" + dt.ToString("yyyyMMddHH") + "+COARRI:D:95B:UN'\r\n" +
                               "BGM+98+"+dt.ToString("yyyyMMddHHmmss") +"+9'\r\n" +
-                              "TDT+20+"+EdiTB.Rows[0]["VOYAGE_AN"].ToString()+"+1++EMS:172:ZZZ+++" + EdiTB.Rows[0]["VISIT_VSL_CALL_SIGN_C"].ToString() + ":103::" + EdiTB.Rows[0]["VESSEL_NM_AN"].ToString() + "'\r\n" +
+                              "TDT+20+"+EdiTB.Rows[0]["VOYAGE_AN"].ToString()+"+1++"+EdiTB.Rows[0]["CNTR_OPERATOR_CODE"].ToString()+":172:ZZZ+++" + EdiTB.Rows[0]["VISIT_VSL_CALL_SIGN_C"].ToString() + ":103::" + EdiTB.Rows[0]["VESSEL_NM_AN"].ToString() + "'\r\n" +
                               "LOC+11+THLCH:139:6+THLCHC:TER:ZZZ'\r\n" +
-                              "NAD+CA+"+LinerPF+":160:ZZZ'\r\n";
+                              "NAD+CA+"+EdiTB.Rows[0]["CNTR_OPERATOR_CODE"].ToString()+":160:ZZZ'\r\n";
 
                 countSegment = countSegment + 6;
                 ostrm = new FileStream(SaveEDIfile.ToString() + "COR" + Line + "DG" + TerArea + FileName.ToString() + ".EDI", FileMode.Create, FileAccess.Write);
@@ -365,11 +365,13 @@ public class EMS
                 {
                    Console.WriteLine("EQD+CN+" + EdiTB.Rows[checkdtb]["CNTR_AN"].ToString() + "+" + EdiTB.Rows[checkdtb]["CONTAINER_TYPE_CODE"].ToString() + ":102:5++" + EdiTB.Rows[checkdtb]["EQP_STATUS_CODE"].ToString() + "+" + EdiTB.Rows[checkdtb]["LADEN_INDICATOR_AN"].ToString() + "'");
                     countSegment++;
-                    if (EdiTB.Rows[checkdtb]["BOOKING_NO_AN"].ToString() != "NOBOOKING")
-                    {
-                        Console.WriteLine("RFF+BN:" + EdiTB.Rows[checkdtb]["BOOKING_NO_AN"].ToString() + "'");
-                        countSegment++;
-                    }
+
+                    // if (EdiTB.Rows[checkdtb]["BOOKING_NO_AN"].ToString() != "NOBOOKING")
+                    // {
+                    //     Console.WriteLine("RFF+BN:" + EdiTB.Rows[checkdtb]["BOOKING_NO_AN"].ToString() + "'");
+                    //     countSegment++;
+                    // }
+                    
                     Console.WriteLine("DTM+203:" + EdiTB.Rows[checkdtb]["ACTIVITY_TM"].ToString() + ":203'");
                     countSegment++;
 
@@ -429,15 +431,15 @@ public class EMS
                 writer.Close();
                 ostrm.Close();
                 countSegment = 0;
-                if (SenderType.ToString() == "EMAIL")
-                {
-                    send_mail.send_mail_control(Line.ToString(), Move.ToString(), TerArea.ToString());
-                    MoveFile(SaveEDIfile, SenderType.ToString());
-                }
-                else if (SenderType.ToString() == "FTP")
-                {
-                    MoveFile(SaveEDIfile, SenderType.ToString());
-                }
+                // if (SenderType.ToString() == "EMAIL")
+                // {
+                //     send_mail.send_mail_control(Line.ToString(), Move.ToString(), TerArea.ToString());
+                //     MoveFile(SaveEDIfile, SenderType.ToString());
+                // }
+                // else if (SenderType.ToString() == "FTP")
+                // {
+                //     MoveFile(SaveEDIfile, SenderType.ToString());
+                // }
                 break;
         }
     }
