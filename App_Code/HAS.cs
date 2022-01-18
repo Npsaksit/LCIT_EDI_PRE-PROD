@@ -372,6 +372,10 @@ using System.Collections.Generic;
 				}
 				Console.WriteLine("LOC+9+"+EdiTB.Rows[checkdtb]["POL"].ToString()+":139:6'");
 				countSegment++;
+
+				Console.WriteLine("LOC+11+THLCH:139:6'");
+				countSegment++;
+
 				Console.WriteLine("LOC+147+"+EdiTB.Rows[checkdtb]["BAY_POSN_AN"].ToString()+"'");
 				countSegment++;
 				
