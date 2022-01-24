@@ -134,15 +134,15 @@ public class EMS
 
                 countSegment = 0;
                 // ---------------------------------------------- END OF CREATE EDI FILE PROCESS --------------------------------------------
-                // if (SenderType.ToString() == "EMAIL")
-                // {
-                //     send_mail.send_mail_control(Line.ToString(), Move.ToString(), TerArea.ToString());
-                //     MoveFile(SaveEDIfile, SenderType.ToString());
-                // }
-                // else if (SenderType.ToString() == "FTP")
-                // {
-                //     MoveFile(SaveEDIfile, SenderType.ToString());
-                // }
+                if (SenderType.ToString() == "EMAIL")
+                {
+                    send_mail.send_mail_control(Line.ToString(), Move.ToString(), TerArea.ToString());
+                    MoveFile(SaveEDIfile, SenderType.ToString());
+                }
+                else if (SenderType.ToString() == "FTP")
+                {
+                    MoveFile(SaveEDIfile, SenderType.ToString());
+                }
                 break;
 
             case "OT":
@@ -431,15 +431,15 @@ public class EMS
                 writer.Close();
                 ostrm.Close();
                 countSegment = 0;
-                // if (SenderType.ToString() == "EMAIL")
-                // {
-                //     send_mail.send_mail_control(Line.ToString(), Move.ToString(), TerArea.ToString());
-                //     MoveFile(SaveEDIfile, SenderType.ToString());
-                // }
-                // else if (SenderType.ToString() == "FTP")
-                // {
-                //     MoveFile(SaveEDIfile, SenderType.ToString());
-                // }
+                if (SenderType.ToString() == "EMAIL")
+                {
+                    send_mail.send_mail_control(Line.ToString(), Move.ToString(), TerArea.ToString());
+                    MoveFile(SaveEDIfile, SenderType.ToString());
+                }
+                else if (SenderType.ToString() == "FTP")
+                {
+                    MoveFile(SaveEDIfile, SenderType.ToString());
+                }
                 break;
         }
     }
